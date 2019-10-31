@@ -1,10 +1,13 @@
 package com.space.service;
 
+import com.space.controller.ShipOrder;
 import com.space.model.Ship;
+import com.space.model.ShipType;
 import com.space.repository.ShipRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -14,7 +17,7 @@ public class ShipServiceImpl implements ShipService {
     @Autowired
     private ShipRepository shipRepository;
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Long shipsCount() {
         return shipRepository.count();
     }
@@ -22,6 +25,11 @@ public class ShipServiceImpl implements ShipService {
     @Override
     public List<Ship> getShipsList() {
         return shipRepository.findAll();
+    }
+
+    @Override
+    public List<Ship> getShipsListByName(String name) {
+        return shipRepository.findAllByNameContains(name);
     }
 
     @Transactional
@@ -35,16 +43,8 @@ public class ShipServiceImpl implements ShipService {
     }
 
     @Override
-    public Ship updateShip(Long id, Ship ship) {
-        shipRepository.deleteById(id);
-        ship.setId(id);
-        shipRepository.save(ship);
-        return ship;
-    }
-
-    @Override
     public Ship createShip(Ship ship) {
-            shipRepository.saveAndFlush(ship);
+            shipRepository.save(ship);
         return ship;
     }
 }

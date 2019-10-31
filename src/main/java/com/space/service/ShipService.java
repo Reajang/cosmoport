@@ -1,5 +1,6 @@
 package com.space.service;
 
+import com.space.controller.ShipOrder;
 import com.space.model.Ship;
 import com.space.model.ShipType;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,6 +18,6 @@ public interface ShipService {
     Long shipsCount();
 
     List<Ship> getShipsList();
+    List<Ship> getShipsListByName(String name);
 
-    Ship updateShip(Long id, Ship ship);
 }
