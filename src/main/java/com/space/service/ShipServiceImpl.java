@@ -1,21 +1,23 @@
 package com.space.service;
 
-import com.space.controller.ShipOrder;
 import com.space.model.Ship;
-import com.space.model.ShipType;
 import com.space.repository.ShipRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
 @Service
 public class ShipServiceImpl implements ShipService {
 
-    @Autowired
+
     private ShipRepository shipRepository;
+
+    @Autowired
+    public ShipServiceImpl(ShipRepository shipRepository) {
+        this.shipRepository = shipRepository;
+    }
 
     @Transactional(readOnly = true)
     public Long shipsCount() {

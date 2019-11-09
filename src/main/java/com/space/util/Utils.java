@@ -1,18 +1,21 @@
 package com.space.util;
 
+import com.space.controller.ShipOrder;
 import com.space.model.Ship;
 import com.space.model.ShipType;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 
 public class Utils {
 
-    public static Date eldest;
+    private static Date eldest;
 
-    public static Date newest;
+    private static Date newest;
 
 
     static {
@@ -39,5 +42,25 @@ public class Utils {
         double k = isUsed ? 0.5 : 1;
         double rating = (80 * speed * k) / (Utils.newest.getYear() - prodDate.getYear() + 1);
         return new BigDecimal(rating).setScale(2, RoundingMode.HALF_UP).doubleValue();
+    }
+
+    public static List<Ship> sortShips(List<Ship> ships, ShipOrder order){
+        if(order != null) {
+            switch (order) {
+                case SPEED:
+                    ships.sort(Comparator.comparing(Ship::getSpeed));
+                    break;
+                case ID:
+                    ships.sort(Comparator.comparing(Ship::getId));
+                    break;
+                case DATE:
+                    ships.sort(Comparator.comparing(Ship::getProdDate));
+                    break;
+                case RATING:
+                    ships.sort(Comparator.comparing(Ship::getRating));
+                    break;
+            }
+        }
+        return ships;
     }
 }

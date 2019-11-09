@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -37,33 +38,58 @@ public class ShipRestController {
                                                    @RequestParam(required = false) Double minRating,
                                                    @RequestParam(required = false) Double maxRating,
                                                    @RequestParam(required = false) ShipOrder order,
-                                                   @RequestParam(required = false) Integer pageNumber) {
+                                                   @RequestParam(required = false, defaultValue = "3") Integer pageSize,
+                                                   @RequestParam(required = false, defaultValue = "0") Integer pageNumber) {
+        List<Ship> list = service.getShipsList();
+        if (name != null) list.removeIf(ship -> !ship.getName().contains(name));
+        if (planet != null) list.removeIf(ship -> !ship.getPlanet().contains(planet));
+        if (shipType != null) list.removeIf(ship -> !ship.getShipType().equals(shipType));
+        if (after != null) list.removeIf(ship -> ship.getProdDate().before(new Date(after)));
+        if (before != null) list.removeIf(ship -> ship.getProdDate().after(new Date(before)));
+        if (isUsed != null) list.removeIf(ship -> !ship.getUsed().equals(isUsed));
+        if (minSpeed != null) list.removeIf(ship -> ship.getSpeed() < minSpeed);
+        if (maxSpeed != null) list.removeIf(ship -> ship.getSpeed() > maxSpeed);
+        if (minCrewSize != null) list.removeIf(ship -> ship.getCrewSize() < minCrewSize);
+        if (maxCrewSize != null) list.removeIf(ship -> ship.getCrewSize() > maxCrewSize);
+        if (minRating != null) list.removeIf(ship -> ship.getRating() < minRating);
+        if (maxRating != null) list.removeIf(ship -> ship.getRating() > maxRating);
 
+        Utils.sortShips(list, order);
 
-
-        List<Ship> list;
-        if(name != null) list = service.getShipsListByName(name);
-        else list= service.getShipsList();
         return list.isEmpty() ? new ResponseEntity<>(HttpStatus.NOT_FOUND) : new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     //Получение кол-ва кораблей. Добавить параметров
     @GetMapping(path = "/count", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public @ResponseBody
-    Long getShipsCount(
-            /*@RequestParam(required = false) String name,
-            @RequestParam(required = false) String planet,
-            @RequestParam(required = false) ShipType shipType,
-            @RequestParam(required = false) Long after,
-            @RequestParam(required = false) Long before,
-            @RequestParam(required = false) Boolean isUsed,
-            @RequestParam(required = false) Double minSpeed,
-            @RequestParam(required = false) Double maxSpeed,
-            @RequestParam(required = false) Integer minCrewSize,
-            @RequestParam(required = false) Integer maxCrewSize,
-            @RequestParam(required = false) Double minRating,
-            @RequestParam(required = false) Double maxRating*/) {
-        return service.shipsCount();
+    Long getShipsCount(@RequestParam(required = false) String name,
+                       @RequestParam(required = false) String planet,
+                       @RequestParam(required = false) ShipType shipType,
+                       @RequestParam(required = false) Long after,
+                       @RequestParam(required = false) Long before,
+                       @RequestParam(required = false) Boolean isUsed,
+                       @RequestParam(required = false) Double minSpeed,
+                       @RequestParam(required = false) Double maxSpeed,
+                       @RequestParam(required = false) Integer minCrewSize,
+                       @RequestParam(required = false) Integer maxCrewSize,
+                       @RequestParam(required = false) Double minRating,
+                       @RequestParam(required = false) Double maxRating) {
+        //Как заменить?
+        List<Ship> list = service.getShipsList();
+        if (name != null) list.removeIf(ship -> !ship.getName().contains(name));
+        if (planet != null) list.removeIf(ship -> !ship.getPlanet().contains(planet));
+        if (shipType != null) list.removeIf(ship -> !ship.getShipType().equals(shipType));
+        if (after != null) list.removeIf(ship -> ship.getProdDate().before(new Date(after)));
+        if (before != null) list.removeIf(ship -> ship.getProdDate().after(new Date(before)));
+        if (isUsed != null) list.removeIf(ship -> !ship.getUsed().equals(isUsed));
+        if (minSpeed != null) list.removeIf(ship -> ship.getSpeed() < minSpeed);
+        if (maxSpeed != null) list.removeIf(ship -> ship.getSpeed() > maxSpeed);
+        if (minCrewSize != null) list.removeIf(ship -> ship.getCrewSize() < minCrewSize);
+        if (maxCrewSize != null) list.removeIf(ship -> ship.getCrewSize() > maxCrewSize);
+        if (minRating != null) list.removeIf(ship -> ship.getRating() < minRating);
+        if (maxRating != null) list.removeIf(ship -> ship.getRating() > maxRating);
+        return (long) list.size();
+        //return service.shipsCount();
     }
 
     //Удаление корабля по id
